@@ -5,6 +5,7 @@ function preload(){
     menuBackgroundImg = loadImage("imgs/DG.png");
     restSoundPicture = loadImage("imgs/restSoundPicture.png");
     hoveredSoundPicture = loadImage("imgs/hoveredSoundPicture.png");
+    clickedSoundPicture = loadImage("imgs/clickedSoundPicture.png");
 }
 
 
@@ -13,13 +14,16 @@ function setup() {
     else {cnv = createCanvas(windowWidth * 0.9, windowHeight * 0.9); cnv.position(windowWidth * 0.05, windowHeight * 0.05);}
     
     menuBackgroundImg.resize(windowWidth * 0.9, windowHeight * 0.9);
-    LiftSeries = new GameModeButtons(10, 430, 80, "Lift Series", 90);
-    muteButton = new SmallButtons(5, height*0.9, 50, 50, "", 0, restSoundPicture, hoveredSoundPicture);
+    liftSeries = new GameModeButtons(10, 430, 80, "Lift Series", 90);
+    muteButton = new SmallButtons(5, 90, 50, 50, "", 0, restSoundPicture, hoveredSoundPicture, clickedSoundPicture);
+    
 }
 
 
 function draw(){
+    
     drawBackGround();
-    LiftSeries.drawButton();
+    liftSeries.drawButton();
+    muteButton.drawPictureButton();
     
 }
