@@ -5,9 +5,9 @@ var mouseclicked = false;   // the state of if the mouse has been clicked once
 // loads the images to the game
 function preload(){
     menuBackgroundImg = loadImage("imgs/DG.png");
-    restSoundPicture = loadImage("imgs/restSoundPicture.png");
-    hoveredSoundPicture = loadImage("imgs/hoveredSoundPicture.png");
-    clickedSoundPicture = loadImage("imgs/clickedSoundPicture.png");
+    restSoundPicture = loadImage("imgs/restSoundPicture.svg");
+    hoveredSoundPicture = loadImage("imgs/hoveredSoundPicture.svg");
+    clickedSoundPicture = loadImage("imgs/clickedSoundPicture.svg");
 }
 
 
