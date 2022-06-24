@@ -11,6 +11,7 @@ class SmallButtons extends GameModeButtons{
         this.x = x / 100 * width;
     }
 
+    // displays the pictures for the mute button depending on the state of the button {rest, hovered or clicked}
     drawPictureButton(){
         if (this.isClicked(false) && this.clickedState == false) {this.clickedState = true}
         else if (this.isClicked(false) && this.clickedState == true) {this.clickedState = false}
