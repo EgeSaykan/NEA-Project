@@ -9,6 +9,8 @@ class GameModeButtons {
         this.fontSize = fontSize        // font size of the text
         this.fontFamily = fontFamily;   // font family of the text
         this.colour = Pcolour           // colour of the text
+        this.clicked = false            // keeps a track of if the button has been clicked or not
+        this.ghostButton = false        // ignore button properties and just display it if true
     }
 
     // returns true if the mouse is over the button
@@ -23,7 +25,7 @@ class GameModeButtons {
     // displays the text of the button for given colour
     drawButton(){
         textFont(this.fontFamily);
-        if (this.ifHovered(true) == true){ fill(this.colour); }
+        if (this.ifHovered(true) == true && this.ghostButton == false){ fill(this.colour); }
         else { fill(0); }
         textAlign(CENTER, TOP);
         textSize(this.fontSize);
