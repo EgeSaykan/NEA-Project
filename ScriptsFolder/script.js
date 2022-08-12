@@ -4,6 +4,7 @@ var gamemode;               // keeps a track of which mode the game currently is
 var guidesPageIndex;        // keeps a track of the index of image to be displayed in guidePages array
 var mainMenuPlatformImg;    // the platform image on main menu
 var counter;                // increments on every iteration of the loop
+var changedGamemode;        // boolean value that is true when gamemode is changed
 
 // loads the images to the game, every image in p5 must be loaded in this preload function
 function preload(){
@@ -21,6 +22,9 @@ function preload(){
     guidesBookHovered = loadImage("imgs/guidesBookHovered.svg");
     guidesBookRest = loadImage("imgs/guidesBookRest.svg");
     guidePages = [loadImage("imgs/fooImage red.png"), loadImage("imgs/fooImage green.png"), loadImage("imgs/fooImage blue.png")]
+
+    // load sound files
+    mainMenuMusic = loadSound('Audio/Music/8. Teardrop Tempo.wav');
 }
 
 
@@ -40,20 +44,29 @@ function setup() {
     liftSeries = new GameModeButtons(10, 480, 80, "Lift Series", 90, 'Comic Sans MS', [0, 102, 153]);                   // the instance for the lift series button
     muteButton = new SmallButtons(5, 90, 50, 50, restSoundPicture, hoveredSoundPicture, clickedSoundPicture);           // the instance for mute button 
     guidesButton = new SmallButtons(90, 90, 50, 50, guidesBookRest, guidesBookHovered, guidesBookClicked);              // the instance for guides button 
+    muteButton.clicked = true;  // set true in order to start the game muted
+    changedGamemode = true;     // the game should initialise main menu first, therefore this variable starts true
 }
 
 // this function is repeated every tick by the P5 library
 // so everything in this will run continuously
 function draw(){
+
     if (gamemode == "Main Menu"){
         drawMainMenuBackGround();           // draws the background image and the buttons for the main menu
     }
-    mouseclicked = false;                   // after each run, mouseclick must be set false
+    
+    mute();                                 // check the mute state and change volume if mute state has changed
+
+    ifChangedGamemode();                    // initialise new game mode
 
     counter++;                              // increment the counter
+    mouseclicked = false;                   // after each run, mouseclick must be set false
+    changedGamemode = false;                // after each run, changedGamemode must be set false
 }
 
-// makes mouseclicked variable true if mouse is clicked
+// this is called when mouse is clicked
 function mouseClicked() {
-    mouseclicked = true;
+    userStartAudio();       // sets Chrome audio to resume
+    mouseclicked = true;    // a global variable which is true if mouse is clicked that run
 }

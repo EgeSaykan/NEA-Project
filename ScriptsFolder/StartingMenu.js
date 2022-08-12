@@ -1,5 +1,6 @@
 function drawMainMenuBackGround(){
 
+
     // changing background colour
     background(45  + Math.sin(counter * 2 * 0.001) * 45, 64 - Math.sin(counter * 0.001) * 64, 56  + Math.sin(counter * 0.001) * 50);
 
@@ -45,5 +46,28 @@ function displayGuidePage(){
     // hitbox of the quit button
     if (0.9512633610049769 * width < mouseX && mouseX < width * 0.9959669567289808 && height * 0.0051321916595031825 < mouseY && mouseY < height * 0.07978226942000084 && mouseclicked === true){
         guidesButton.clicked = false;
+    }
+}
+
+// set the volume 0 if muteButton.clicked == true
+// set the volume 1 if muteButton.clicked == false
+function mute(){
+    if (muteButton.clicked == false){
+        outputVolume(1);
+    }
+    else {
+        outputVolume(0);
+    }
+}
+
+function ifChangedGamemode(){
+    if (changedGamemode == true){
+        if (gamemode == "Main Menu"){
+            mainMenuMusic.loop();
+        }
+        else {
+            mainMenuMusic.stop();
+        }
+
     }
 }
