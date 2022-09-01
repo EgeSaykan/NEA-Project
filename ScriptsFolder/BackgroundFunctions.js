@@ -2,7 +2,7 @@ function drawMainMenuBackGround(){
 
 
     // changing background colour
-    background(45  + Math.sin(counter * 2 * 0.001) * 45, 64 - Math.sin(counter * 0.001) * 64, 56  + Math.sin(counter * 0.001) * 50);
+    background(45  + Math.sin((counter * 2 * 0.001) % PI) * 45, 64 - Math.sin((counter * 0.001) % PI) * 64, 56  + Math.sin((counter * 0.001) % PI) * 50);
 
     // display decoration platforms
     image(mainMenuPlatformImg, 100 * width / 1382, (350 + Math.sin(counter * 0.001) * 80) * height / 642);
@@ -27,6 +27,17 @@ function drawMainMenuBackGround(){
         guidesButton.ghostButton = false;
     }
 }
+
+function drawLiftSeries(){
+    background(80, 80, 0);
+    for (let i = 0; i < hoveringPlatforms.length; i++){
+        hoveringPlatforms[i].drawPlatform(hoveringPlatformImage);
+    }
+    for (let i = 0; i < solidPlatforms.length; i++){
+        solidPlatforms[i].drawPlatform(solidPlatformImage);
+    }
+}
+
 
 // displays the images for guides page and handles the interactions with the guides page
 function displayGuidePage(){
@@ -60,14 +71,40 @@ function mute(){
     }
 }
 
+function displayControlsPage(duration){
+
+    // if the difference of time is greater than duration seconds, end Controls Page
+    if (currentTime - liftSeriesTime < duration * 1000){
+        //console.log(currentTime, beginningTime, currentTime - beginningTime)
+        background(255)
+        return false;
+    }
+    return true;
+}
+
 function ifChangedGamemode(){
     if (changedGamemode == true){
+        mainMenuMusic.stop(); // stop music to start the new one
+
+        // initiate main menu
         if (gamemode == "Main Menu"){
-            mainMenuMusic.loop();
-        }
-        else {
-            mainMenuMusic.stop();
+            mainMenuMusic.loop();   // start the main menu music
         }
 
+        // initiate Lift Series
+        if (gamemode == "Lift Series"){
+            liftSeriesTime = millis(); // get the time when lift series is activated
+            liftSeriesMusic.loop();    // start the gameplay music
+            createPlatform(0.2, 0.4, 0.1, 0.2, 0.2, 0.4, 0.05, 0.05); // create a new map
+        }
     }
 }
+
+function changeGamemode(){
+    if (liftSeries.clicked == true){
+        gamemode = "Lift Series";
+        changedGamemode = true;
+        liftSeries.clicked = false;
+    }       
+}
+

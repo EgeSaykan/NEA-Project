@@ -30,6 +30,7 @@ class GameModeButtons {
         textAlign(CENTER, TOP);
         textSize(this.fontSize);
         text(this.text, 0, this.y, width);
+        if (this.isClicked(true) == true) { this.clicked = true; }
     }
 
 

@@ -6,6 +6,11 @@ var mainMenuPlatformImg;    // the platform image on main menu
 var counter;                // increments on every iteration of the loop
 var changedGamemode;        // boolean value that is true when gamemode is changed
 
+let liftSeriesTime;      // time in milliseconds since canvas is created when Lift Series is activated
+let currentTime;         // time in miliseconds since canvas is created
+let solidPlatforms       // the array which has the objects of every solid platform
+let hoveringPlatforms    // the array which has the objects of every hovering platform
+
 // loads the images to the game, every image in p5 must be loaded in this preload function
 function preload(){
 
@@ -25,6 +30,10 @@ function preload(){
 
     // load sound files
     mainMenuMusic = loadSound('Audio/Music/8. Teardrop Tempo.wav');
+    liftSeriesMusic = loadSound('Audio/Music/7. Strange.wav');
+    
+    solidPlatformImage = loadImage("imgs/solidPlatform.png");
+    hoveringPlatformImage = loadImage("imgs/hoveringPlatform.png");
 }
 
 
@@ -46,27 +55,42 @@ function setup() {
     guidesButton = new SmallButtons(90, 90, 50, 50, guidesBookRest, guidesBookHovered, guidesBookClicked);              // the instance for guides button 
     muteButton.clicked = true;  // set true in order to start the game muted
     changedGamemode = true;     // the game should initialise main menu first, therefore this variable starts true
+    hoveringPlatforms = [];             // initialise the array
+    solidPlatforms = [];                // initialise the array
 }
 
 // this function is repeated every tick by the P5 library
 // so everything in this will run continuously
 function draw(){
+    currentTime = millis();
 
+    // if main menu is active
     if (gamemode == "Main Menu"){
         drawMainMenuBackGround();           // draws the background image and the buttons for the main menu
+    }
+
+    // if lift series is active
+    else if (gamemode == "Lift Series"){
+        // run inside if statement, if controls page is over
+        if (displayControlsPage(5)){
+            drawLiftSeries();
+        }
     }
     
     mute();                                 // check the mute state and change volume if mute state has changed
 
+    changeGamemode();                       // change the gamemode if a stimuli is activated (such as lift series button being clicked)
     ifChangedGamemode();                    // initialise new game mode
 
     counter++;                              // increment the counter
     mouseclicked = false;                   // after each run, mouseclick must be set false
     changedGamemode = false;                // after each run, changedGamemode must be set false
+    
 }
 
 // this is called when mouse is clicked
 function mouseClicked() {
     userStartAudio();       // sets Chrome audio to resume
     mouseclicked = true;    // a global variable which is true if mouse is clicked that run
+
 }
