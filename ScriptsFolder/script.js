@@ -5,6 +5,7 @@ var guidesPageIndex;        // keeps a track of the index of image to be display
 var mainMenuPlatformImg;    // the platform image on main menu
 var counter;                // increments on every iteration of the loop
 var changedGamemode;        // boolean value that is true when gamemode is changed
+var paused;                 // boolean value. if true, pause game
 
 let liftSeriesTime;      // time in milliseconds since canvas is created when Lift Series is activated
 let currentTime;         // time in miliseconds since canvas is created
@@ -32,19 +33,29 @@ function preload(){
     mainMenuMusic = loadSound('Audio/Music/8. Teardrop Tempo.wav');
     liftSeriesMusic = loadSound('Audio/Music/7. Strange.wav');
     
+    // platform images
     solidPlatformImage = loadImage("imgs/solidPlatform.png");
     hoveringPlatformImage = loadImage("imgs/hoveringPlatform.png");
+
+    // pause button images
+    pausedImage = loadImage("imgs/paused.svg");
+    pauseImage = loadImage("imgs/pause.svg");
+    pauseHoveredImage = loadImage("imgs/pauseHovered.svg");
 }
 
 
 function setup() {
-    // initializing the variables
+    // initialising the variables
     mouseclicked = false;
     gamemode = "Main Menu";
     guidesPageIndex = 0;
     counter = 0;
+    paused = false;
+    changedGamemode = true;   // the game should initialise main menu first, therefore this variable starts true
+    hoveringPlatforms = [];
+    solidPlatforms = [];
     
-    // this displays an error message if user tries to use a non-appropate device, such as a phone
+    // this displays an error message if user tries to use a non-appropriate device, such as a phone
     if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)){document.write("Use a computer to access the application.");}
     else {cnv = createCanvas(windowWidth * 0.9, windowHeight * 0.9); cnv.position(windowWidth * 0.05, windowHeight * 0.05);}
     
@@ -53,22 +64,19 @@ function setup() {
     liftSeries = new GameModeButtons(10, 480, 80, "Lift Series", 90, 'Comic Sans MS', [0, 102, 153]);                   // the instance for the lift series button
     muteButton = new SmallButtons(5, 90, 50, 50, restSoundPicture, hoveredSoundPicture, clickedSoundPicture);           // the instance for mute button 
     guidesButton = new SmallButtons(90, 90, 50, 50, guidesBookRest, guidesBookHovered, guidesBookClicked);              // the instance for guides button 
+    pauseButton = new SmallButtons(90, 5, 50, 50, pauseImage, pauseHoveredImage, pausedImage);                          // the instance for pause button 
     muteButton.clicked = true;  // set true in order to start the game muted
-    changedGamemode = true;     // the game should initialise main menu first, therefore this variable starts true
-    hoveringPlatforms = [];             // initialise the array
-    solidPlatforms = [];                // initialise the array
 }
 
 // this function is repeated every tick by the P5 library
 // so everything in this will run continuously
 function draw(){
     currentTime = millis();
-
     // if main menu is active
     if (gamemode == "Main Menu"){
         drawMainMenuBackGround();           // draws the background image and the buttons for the main menu
     }
-
+    
     // if lift series is active
     else if (gamemode == "Lift Series"){
         // run inside if statement, if controls page is over
@@ -76,6 +84,7 @@ function draw(){
             drawLiftSeries();
         }
     }
+
     
     mute();                                 // check the mute state and change volume if mute state has changed
 
@@ -85,7 +94,7 @@ function draw(){
     counter++;                              // increment the counter
     mouseclicked = false;                   // after each run, mouseclick must be set false
     changedGamemode = false;                // after each run, changedGamemode must be set false
-    
+    keyCode = 0;                            // reset keyCode
 }
 
 // this is called when mouse is clicked

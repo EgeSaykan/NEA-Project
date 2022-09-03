@@ -36,6 +36,12 @@ function drawLiftSeries(){
     for (let i = 0; i < solidPlatforms.length; i++){
         solidPlatforms[i].drawPlatform(solidPlatformImage);
     }
+    pauseButton.drawPictureButton();
+    if (pauseButton.clicked == true || keyCode == 27){ paused = true; } // set paused true, if pause button is clicked or ESC is pressed
+    if (paused == true) { 
+        pauseButton.ghostButton = true;
+        pauseGame(0.3, 0.7, 15, [235, 52, 95, 150], [150, 100, 100]);
+    }
 }
 
 
@@ -84,7 +90,9 @@ function displayControlsPage(duration){
 
 function ifChangedGamemode(){
     if (changedGamemode == true){
-        mainMenuMusic.stop(); // stop music to start the new one
+        // stop music to start the new one
+        mainMenuMusic.stop(); 
+        liftSeriesMusic.stop();
 
         // initiate main menu
         if (gamemode == "Main Menu"){
@@ -108,3 +116,47 @@ function changeGamemode(){
     }       
 }
 
+// display and oprate pause menu
+function pauseGame(rectWidth, rectHeight, cornerRadii, rectColourFill, rectColourStroke) {
+
+    // draw the menu
+    strokeWeight(4);
+    stroke(rectColourStroke);
+    fill(rectColourFill);
+    rect(width * (1 - rectWidth) * 0.5, height * (1 - rectHeight) * 0.5, width * rectWidth, height * rectHeight, cornerRadii);
+    noStroke();
+
+    // instantiate the buttons
+    let continueButton = new GameModeButtons(25, 200, 45, "Continue", 40, 'Comic Sans MS', [50, 182, 80]);
+    let restartButton = new GameModeButtons(45, 160, 45, "Restart", 40, 'Comic Sans MS', [50, 122, 173]);
+    let MainMenuButton = new GameModeButtons(60, 200, 100, "Return to\nMain Menu", 40, 'Comic Sans MS', [255, 102, 53]);
+
+    // draw the buttons
+    continueButton.drawButton();
+    restartButton.drawButton();
+    MainMenuButton.drawButton();
+
+    // resume game
+    if (continueButton.clicked == true) {
+        paused = false;
+        pauseButton.clicked = false;
+        pauseButton.ghostButton = false;
+    }
+
+    // restart by re-initiating current game mode
+    else if (restartButton.clicked == true) {
+        changedGamemode = true;
+        paused = false;
+        pauseButton.clicked = false;
+        pauseButton.ghostButton = false;
+    }
+
+    // return back to main
+    else if (MainMenuButton.clicked == true) {
+        changedGamemode = true;
+        paused = false;
+        gamemode = "Main Menu";
+        pauseButton.clicked = false;
+        pauseButton.ghostButton = false;
+    }
+}
