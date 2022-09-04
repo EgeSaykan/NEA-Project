@@ -1,21 +1,38 @@
+// ------------ HEADER COMMENT ------------
+
+// this file declares the Platforms class
+// and createPlatform() function to fill global hoveringPlatforms and solidPlatforms with Platforms objects
+// so only createPlatforms in this function will be called in other files to fill the arrays with Platforms objects
+
+
+// ------------ Classes ------------
+
+// Platforms class is used to hold the x, y values and size of a platform image
+// it displays the image via drawPlatform()
+// and corners of the the platforms is returned when getBorders() is called
 class Platforms {
     constructor(x, y, givenWidth, givenHeight){
-        this.x = x;
-        this.y = y;
-        this.width = givenWidth;
-        this.height = givenHeight;
+        this.x = x;                 // x location of the platform
+        this.y = y;                 // y lovation of the platform
+        this.width = givenWidth;    // width of the platform
+        this.height = givenHeight;  // height of the platform
     }
 
+    // display the platform on the screen with given sizes
     drawPlatform(platformImage){
         platformImage.resize(this.width, this.height);
         image(platformImage, this.x, this.y);
     }
 
+    // return the edge coordinates of the platform
+    // this function will be used to calculate collisions
     getBorders() {
         return [this.x, this.y, this.x + this.width, this.y + this.height]
     }
 }
 
+// createPlatform() function chooses a random number of platforms between {2, 3, 4} 
+// and fills the global hoveringPlatforms and solidPlatforms arrays with platform objects
 function createPlatform(solidPlatformWidth0, solidPlatformWidth1, solidPlatformHeight0, solidPlatformHeight1, hoveringPlatformWidth0, hoveringPlatformWidth1, hoveringPlatformHeight0, hoveringPlatformHeight1) {
     // all the parameters are couples of 2
     // which contain the minimum and maximum length of the platform

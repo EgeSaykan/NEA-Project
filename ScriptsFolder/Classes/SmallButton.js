@@ -1,3 +1,15 @@
+// ------------ HEADER COMMENT ------------
+
+// declares SmallButtons class
+
+
+// ------------ Classes ------------
+
+// this class is inherited from GameModeButtons
+// and it has a dew differences
+// instead of a text, it displays an image
+// it has an x variable which lets it to be anywhere on the screen
+// this class will be used for sub buttons such as muting button
 class SmallButtons extends GameModeButtons{
     constructor(x, y, givenWidth, givenHeight, pic1, pic2, pic3){
         super(y, givenWidth, givenHeight);  // use the super function to declare all the variables in the super class 

@@ -1,3 +1,14 @@
+// ------------ HEADER COMMENT ------------
+
+// this file declares GameModeButtons
+
+
+// ------------ Classes ------------
+
+// creates a text button at given y location and text
+// changes colour when mouse hovers over it
+// GameModeButtons.clicked is set to true if it is clicked on
+// this class will be used for main buttons such as game start
 class GameModeButtons {
     
     constructor(y, givenWidth, givenHeight, name, fontSize, fontFamily, Pcolour){

@@ -1,17 +1,60 @@
-// declaring the variables
+// ------------ HEADER COMMENT ------------
+
+// this is the main file
+// it uses functions and classes declared in other files in the directory or sub directories
+// using p5 module, first the initialisation of global variables is done in preload() and setup()
+// and draw is the continious function that runs on repeat
+
+
+// ------------ declaring global variables ------------
+
 var mouseclicked;           // the state of if the mouse has been clicked once
 var gamemode;               // keeps a track of which mode the game currently is: "Main Menu", "Lift Series"
 var guidesPageIndex;        // keeps a track of the index of image to be displayed in guidePages array
-var mainMenuPlatformImg;    // the platform image on main menu
 var counter;                // increments on every iteration of the loop
 var changedGamemode;        // boolean value that is true when gamemode is changed
 var paused;                 // boolean value. if true, pause game
+var liftSeriesTime;         // time in milliseconds since canvas is created when Lift Series is activated
+var currentTime;            // time in miliseconds since canvas is created
+var solidPlatforms          // the array which has the objects of every solid platform
+var hoveringPlatforms       // the array which has the objects of every hovering platform
 
-let liftSeriesTime;      // time in milliseconds since canvas is created when Lift Series is activated
-let currentTime;         // time in miliseconds since canvas is created
-let solidPlatforms       // the array which has the objects of every solid platform
-let hoveringPlatforms    // the array which has the objects of every hovering platform
+// ------ images ------
+var mainMenuPlatformImg;    // the platform image on main menu
 
+// mute button images
+var restSoundPicture;
+var hoveredSoundPicture;
+var clickedSoundPicture;
+
+// guides button images
+var guidesBookClicked;
+var guidesBookHovered;
+var guidesBookRest;
+var guidePages
+
+// load sound files
+var mainMenuMusic;
+var liftSeriesMusic;
+
+// platform images
+var solidPlatformImage;
+var hoveringPlatformImage;
+
+// pause button images
+var pausedImage;
+var pauseImage;
+var pauseHoveredImage;
+
+
+// ------ classes ------
+var liftSeries;
+var muteButton;
+var guidesButton;
+var pauseButton;
+
+
+// ------------ loading images ------------
 // loads the images to the game, every image in p5 must be loaded in this preload function
 function preload(){
 
@@ -27,7 +70,7 @@ function preload(){
     guidesBookClicked = loadImage("imgs/guidesBookClicked.svg");
     guidesBookHovered = loadImage("imgs/guidesBookHovered.svg");
     guidesBookRest = loadImage("imgs/guidesBookRest.svg");
-    guidePages = [loadImage("imgs/fooImage red.png"), loadImage("imgs/fooImage green.png"), loadImage("imgs/fooImage blue.png")]
+    guidePages = [loadImage("imgs/fooImage red.png"), loadImage("imgs/fooImage green.png"), loadImage("imgs/fooImage blue.png")];
 
     // load sound files
     mainMenuMusic = loadSound('Audio/Music/8. Teardrop Tempo.wav');
@@ -43,7 +86,9 @@ function preload(){
     pauseHoveredImage = loadImage("imgs/pauseHovered.svg");
 }
 
-
+// ------------ initialisation ------------
+// set up is executed once during the initialisation of p5
+// I can put here initialisations of variables and creation of the canvas
 function setup() {
     // initialising the variables
     mouseclicked = false;
@@ -71,7 +116,8 @@ function setup() {
 // this function is repeated every tick by the P5 library
 // so everything in this will run continuously
 function draw(){
-    currentTime = millis();
+    currentTime = millis(); // get the time passed since canvas creation
+
     // if main menu is active
     if (gamemode == "Main Menu"){
         drawMainMenuBackGround();           // draws the background image and the buttons for the main menu
@@ -81,6 +127,7 @@ function draw(){
     else if (gamemode == "Lift Series"){
         // run inside if statement, if controls page is over
         if (displayControlsPage(5)){
+            // draw lift series
             drawLiftSeries();
         }
     }

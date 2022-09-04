@@ -1,3 +1,14 @@
+// ------------ HEADER COMMENT ------------
+
+// this file contains all background functions such as drawing background or muting
+// every function is either called in another function or it is called in script.js
+// this file only declares functions but does not call them
+
+
+// ------------ functions ------------
+
+// draw main menu background 
+// show and operate lift series, mute and guides buttons
 function drawMainMenuBackGround(){
 
 
@@ -28,14 +39,20 @@ function drawMainMenuBackGround(){
     }
 }
 
+// display lift series bavkground and the platforms
+// pause the game if pause button is pressed
 function drawLiftSeries(){
     background(80, 80, 0);
+
+    // display the platforms
     for (let i = 0; i < hoveringPlatforms.length; i++){
         hoveringPlatforms[i].drawPlatform(hoveringPlatformImage);
     }
     for (let i = 0; i < solidPlatforms.length; i++){
         solidPlatforms[i].drawPlatform(solidPlatformImage);
     }
+
+    // pause button
     pauseButton.drawPictureButton();
     if (pauseButton.clicked == true || keyCode == 27){ paused = true; } // set paused true, if pause button is clicked or ESC is pressed
     if (paused == true) { 
@@ -77,6 +94,8 @@ function mute(){
     }
 }
 
+// display the controls page that explaines randomised controls for duration many seconds
+// then return true so that lift series game play can start
 function displayControlsPage(duration){
 
     // if the difference of time is greater than duration seconds, end Controls Page
@@ -88,6 +107,11 @@ function displayControlsPage(duration){
     return true;
 }
 
+
+// initialises the new gamemode
+// stop all musics
+// start new music according to new gamemode 
+// and uphold further actions if necessary (such as platform creation)
 function ifChangedGamemode(){
     if (changedGamemode == true){
         // stop music to start the new one
@@ -108,6 +132,7 @@ function ifChangedGamemode(){
     }
 }
 
+// change the gamemode to "Lift Series" if lift series button on main menu is clicked
 function changeGamemode(){
     if (liftSeries.clicked == true){
         gamemode = "Lift Series";
@@ -116,7 +141,9 @@ function changeGamemode(){
     }       
 }
 
-// display and oprate pause menu
+// displays the pause menu
+// creates the buttons for the pause menu
+// and defines the actions to uphold when any of these buttons are clicked
 function pauseGame(rectWidth, rectHeight, cornerRadii, rectColourFill, rectColourStroke) {
 
     // draw the menu
