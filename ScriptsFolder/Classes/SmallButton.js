@@ -12,7 +12,7 @@
 // this class will be used for sub buttons such as muting button
 class SmallButtons extends GameModeButtons{
     constructor(x, y, givenWidth, givenHeight, pic1, pic2, pic3){
-        super(y, givenWidth, givenHeight);  // use the super function to declare all the variables in the super class 
+        super(y, givenWidth, givenHeight);              // use the super function to declare all the variables in the super class 
         this.restPicture = pic1;                        // the picture displayed when the mouse is not on the button or not muted
         this.hoveredPicture = pic2;                     // the picture displayed when the mouse is on the button or not muted
         this.clickedPicture = pic3;                     // the picture displayed when mute is on

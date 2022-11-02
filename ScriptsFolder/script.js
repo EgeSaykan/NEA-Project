@@ -16,8 +16,22 @@ var changedGamemode;        // boolean value that is true when gamemode is chang
 var paused;                 // boolean value. if true, pause game
 var liftSeriesTime;         // time in milliseconds since canvas is created when Lift Series is activated
 var currentTime;            // time in miliseconds since canvas is created
-var solidPlatforms          // the array which has the objects of every solid platform
-var hoveringPlatforms       // the array which has the objects of every hovering platform
+var solidPlatforms;         // the array which has the objects of every solid platform
+var hoveringPlatforms;      // the array which has the objects of every hovering platform
+var cooefOfFriction;        // how fast will the acceleration decrease due to friction
+const g = 10;               // gravitational constant
+var fireWallSpeed;          // time difference between creation of each wall piece
+var jumpingConstant;        // how fast the vertical acceleration of the player increases
+var accel_vel_constant;     // how much the acceleration affects the velocity
+var runningConstant;        // how fast the horizontal acceleration of the player increases
+
+// ------ global attack variables ------
+var attackDuration;         // how long will each firewall piece last
+var wallSeperation;
+var attackDamage;
+var attackHeight;
+var attackWidth;
+var projectileSpeed;
 
 // ------ images ------
 var mainMenuPlatformImg;    // the platform image on main menu
@@ -86,6 +100,7 @@ function preload(){
     pauseHoveredImage = loadImage("imgs/pauseHovered.svg");
 }
 
+
 // ------------ initialisation ------------
 // set up is executed once during the initialisation of p5
 // I can put here initialisations of variables and creation of the canvas
@@ -99,6 +114,24 @@ function setup() {
     changedGamemode = true;   // the game should initialise main menu first, therefore this variable starts true
     hoveringPlatforms = [];
     solidPlatforms = [];
+    cooefOfFriction = 1;
+    fireWallSpeed = 0.5;
+    attackDuration = 3;
+    jumpingConstant = 30;
+    accel_vel_constant = 0.05;
+    runningConstant = 2;
+    wallSeperation = 1;
+    attackDamage = 8;
+    attackHeight = 50;
+    attackWidth = 50;
+    projectileSpeed = 5;
+
+    slider1 = [createSlider(300, 500, 400), createSlider(300, 500, 400)];
+    slider2 = [createSlider(300, 500, 400), createSlider(300, 500, 400)];
+    m = new ProjectileAttack(0 , 0, attackWidth, attackHeight, attackDamage, projectileSpeed, windowWidth, 1)
+    a = new Player(50, 100, width, height, 10, [], [], [], [], 8, 100, 1)
+    a.attackArray.push(m)
+    
     
     // this displays an error message if user tries to use a non-appropriate device, such as a phone
     if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)){document.write("Use a computer to access the application.");}
@@ -113,6 +146,7 @@ function setup() {
     muteButton.clicked = true;  // set true in order to start the game muted
 }
 
+
 // this function is repeated every tick by the P5 library
 // so everything in this will run continuously
 function draw(){
@@ -126,18 +160,51 @@ function draw(){
     // if lift series is active
     else if (gamemode == "Lift Series"){
         // run inside if statement, if controls page is over
-        if (displayControlsPage(5)){
+        if (displayControlsPage(0.2)){
             // draw lift series
             drawLiftSeries();
         }
     }
+    
+    // -------------------DELETE------------------
+    //m.x = slider2[0].value()
+    if (gamemode=="Lift Series") {
+        if(keyIsPressed === true){
+            a.processInput()
+            console.log(a.acceleration)
+        }
+        a.collide(a.position[0], a.position[1], a.velocity, a.acceleration)
+        
+        
+    }
+    else
+    {
+    m.y = slider2[1].value()
+    a.position[0] = slider1[0].value()
+    a.position[1] = slider1[1].value()
+    }
+    {
+    push()
+    let boundries = m.returnBorders();
+    fill(255, 255, 0, 120)
+    rect(boundries[0], boundries[1], boundries[2] - boundries[0], boundries[3] - boundries[1])
+    fill(255, 0, 0, 120)
+    rect(a.position[0], a.position[1], a.characterWidth, a.characterHeight)
+    stroke(255, 255, 255)
+    line((a.position[0] + a.characterWidth / 2), (a.position[1] + a.characterHeight / 2), (boundries[0] + (boundries[2] - boundries[0]) / 2), (boundries[1] + (boundries[3] - boundries[1]) / 2))
+    pop();
+    a.isPlayerHit([[m]])
+    a.checkAttackLifeTime();
+
+    }
+    // -------------------DELETE------------------
 
     
     mute();                                 // check the mute state and change volume if mute state has changed
 
     changeGamemode();                       // change the gamemode if a stimuli is activated (such as lift series button being clicked)
     ifChangedGamemode();                    // initialise new game mode
-
+    if(changedGamemode==true){a.position=[75, 20]}
     counter++;                              // increment the counter
     mouseclicked = false;                   // after each run, mouseclick must be set false
     changedGamemode = false;                // after each run, changedGamemode must be set false
