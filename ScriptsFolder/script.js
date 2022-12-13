@@ -138,8 +138,6 @@ function setup() {
     if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)){document.write("Use playerObject computer to access the application.");}
     else {cnv = createCanvas(windowWidth * 0.9, windowHeight * 0.9); cnv.position(windowWidth * 0.05, windowHeight * 0.05);}
     
-    slider1 = [createSlider(300, 500, 400), createSlider(300, 500, 400)];
-    slider2 = [createSlider(300, 500, 400), createSlider(300, 500, 400)];
 
 
 
