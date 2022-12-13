@@ -9,8 +9,8 @@
 // ------------ declaring global variables ------------
 
 var mouseclicked;           // the state of if the mouse has been clicked once
-var gamemode;               // keeps a track of which mode the game currently is: "Main Menu", "Lift Series"
-var guidesPageIndex;        // keeps a track of the index of image to be displayed in guidePages array
+var gamemode;               // keeps playerObject track of which mode the game currently is: "Main Menu", "Lift Series"
+var guidesPageIndex;        // keeps playerObject track of the index of image to be displayed in guidePages array
 var counter;                // increments on every iteration of the loop
 var changedGamemode;        // boolean value that is true when gamemode is changed
 var paused;                 // boolean value. if true, pause game
@@ -19,11 +19,14 @@ var currentTime;            // time in miliseconds since canvas is created
 var solidPlatforms;         // the array which has the objects of every solid platform
 var hoveringPlatforms;      // the array which has the objects of every hovering platform
 var cooefOfFriction;        // how fast will the acceleration decrease due to friction
-const g = 10;               // gravitational constant
+const g = 8;                // gravitational constant
 var fireWallSpeed;          // time difference between creation of each wall piece
 var jumpingConstant;        // how fast the vertical acceleration of the player increases
 var accel_vel_constant;     // how much the acceleration affects the velocity
 var runningConstant;        // how fast the horizontal acceleration of the player increases
+var level = 0;              // the level of current lift series
+const randomAttackKeys = ["i", "j", "k", "l"]; // attack keys that will be used to randomise for player's attacks
+let callStartGameOnce = false;  // makes sure startGame is called once every game
 
 // ------ global attack variables ------
 var attackDuration;         // how long will each firewall piece last
@@ -66,6 +69,8 @@ var liftSeries;
 var muteButton;
 var guidesButton;
 var pauseButton;
+var playerObject;
+var enemyObject;
 
 
 // ------------ loading images ------------
@@ -84,7 +89,7 @@ function preload(){
     guidesBookClicked = loadImage("imgs/guidesBookClicked.svg");
     guidesBookHovered = loadImage("imgs/guidesBookHovered.svg");
     guidesBookRest = loadImage("imgs/guidesBookRest.svg");
-    guidePages = [loadImage("imgs/fooImage red.png"), loadImage("imgs/fooImage green.png"), loadImage("imgs/fooImage blue.png")];
+    guidePages = [loadImage("imgs/guidesPageOne.png"), loadImage("imgs/guidesPageTwo.png")];
 
     // load sound files
     mainMenuMusic = loadSound('Audio/Music/8. Teardrop Tempo.wav');
@@ -114,29 +119,31 @@ function setup() {
     changedGamemode = true;   // the game should initialise main menu first, therefore this variable starts true
     hoveringPlatforms = [];
     solidPlatforms = [];
-    cooefOfFriction = 1;
+    cooefOfFriction = 0.1;
     fireWallSpeed = 0.5;
-    attackDuration = 3;
-    jumpingConstant = 30;
-    accel_vel_constant = 0.05;
+    attackDuration = 1.5;
+    jumpingConstant = 20;
+    accel_vel_constant = 0.1;
     runningConstant = 2;
-    wallSeperation = 1;
+    wallSeperation = 4;
     attackDamage = 8;
     attackHeight = 50;
     attackWidth = 50;
     projectileSpeed = 5;
 
-    slider1 = [createSlider(300, 500, 400), createSlider(300, 500, 400)];
-    slider2 = [createSlider(300, 500, 400), createSlider(300, 500, 400)];
-    m = new ProjectileAttack(0 , 0, attackWidth, attackHeight, attackDamage, projectileSpeed, windowWidth, 1)
-    a = new Player(50, 100, width, height, 10, [], [], [], [], 8, 100, 1)
-    a.attackArray.push(m)
     
     
-    // this displays an error message if user tries to use a non-appropriate device, such as a phone
-    if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)){document.write("Use a computer to access the application.");}
+    
+    // this displays an error message if user tries to use playerObject non-appropriate device, such as playerObject phone
+    if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)){document.write("Use playerObject computer to access the application.");}
     else {cnv = createCanvas(windowWidth * 0.9, windowHeight * 0.9); cnv.position(windowWidth * 0.05, windowHeight * 0.05);}
     
+    slider1 = [createSlider(300, 500, 400), createSlider(300, 500, 400)];
+    slider2 = [createSlider(300, 500, 400), createSlider(300, 500, 400)];
+
+
+
+
     for (var i = 0; i < guidePages.length; i++) {guidePages[i].resize(windowWidth * 0.9, windowHeight * 0.9)}           // resizing the guide images
     mainMenuPlatformImg.resize(width * 235 / 1382, height * 38 / 742)                                                   // resizing the main menu platforms
     liftSeries = new GameModeButtons(10, 480, 80, "Lift Series", 90, 'Comic Sans MS', [0, 102, 153]);                   // the instance for the lift series button
@@ -160,51 +167,23 @@ function draw(){
     // if lift series is active
     else if (gamemode == "Lift Series"){
         // run inside if statement, if controls page is over
-        if (displayControlsPage(0.2)){
+        if (displayControlsPage(3)){
             // draw lift series
             drawLiftSeries();
         }
-    }
-    
-    // -------------------DELETE------------------
-    //m.x = slider2[0].value()
-    if (gamemode=="Lift Series") {
-        if(keyIsPressed === true){
-            a.processInput()
-            console.log(a.acceleration)
-        }
-        a.collide(a.position[0], a.position[1], a.velocity, a.acceleration)
-        
         
     }
-    else
-    {
-    m.y = slider2[1].value()
-    a.position[0] = slider1[0].value()
-    a.position[1] = slider1[1].value()
-    }
-    {
-    push()
-    let boundries = m.returnBorders();
-    fill(255, 255, 0, 120)
-    rect(boundries[0], boundries[1], boundries[2] - boundries[0], boundries[3] - boundries[1])
-    fill(255, 0, 0, 120)
-    rect(a.position[0], a.position[1], a.characterWidth, a.characterHeight)
-    stroke(255, 255, 255)
-    line((a.position[0] + a.characterWidth / 2), (a.position[1] + a.characterHeight / 2), (boundries[0] + (boundries[2] - boundries[0]) / 2), (boundries[1] + (boundries[3] - boundries[1]) / 2))
-    pop();
-    a.isPlayerHit([[m]])
-    a.checkAttackLifeTime();
 
+    // make sure the input is cleared if user is not using any keys
+    if (keyIsPressed === false){
+        key = "";
     }
-    // -------------------DELETE------------------
-
     
     mute();                                 // check the mute state and change volume if mute state has changed
 
-    changeGamemode();                       // change the gamemode if a stimuli is activated (such as lift series button being clicked)
+    changeGamemode();                       // change the gamemode if playerObject stimuli is activated (such as lift series button being clicked)
     ifChangedGamemode();                    // initialise new game mode
-    if(changedGamemode==true){a.position=[75, 20]}
+
     counter++;                              // increment the counter
     mouseclicked = false;                   // after each run, mouseclick must be set false
     changedGamemode = false;                // after each run, changedGamemode must be set false
@@ -214,6 +193,6 @@ function draw(){
 // this is called when mouse is clicked
 function mouseClicked() {
     userStartAudio();       // sets Chrome audio to resume
-    mouseclicked = true;    // a global variable which is true if mouse is clicked that run
+    mouseclicked = true;    // playerObject global variable which is true if mouse is clicked that run
 
 }

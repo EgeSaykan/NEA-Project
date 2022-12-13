@@ -49,32 +49,32 @@ function createPlatform(solidPlatformWidth0, solidPlatformWidth1, solidPlatformH
     // because player can accidently fall down
     if (numberOfPlatforms == 2) {
         // create a platform at the left bottom part of the map
-        solidPlatforms.push(new Platforms(Math.floor(Math.random() * 0.05 * width), Math.floor(Math.random() * height * 0.2) + height * 0.6, Math.floor(Math.random() * width * (solidPlatformWidth1 - solidPlatformWidth0)) + width * solidPlatformWidth0, Math.floor(Math.random() * height * (solidPlatformHeight1 - solidPlatformHeight0)) + height * solidPlatformHeight0));
+        solidPlatforms.push(new Platforms(Math.floor(Math.random() * 0.05 * width), Math.floor(Math.random() * height * 0.2) + Math.floor(height * 0.6), Math.floor(Math.random() * width * (solidPlatformWidth1 - solidPlatformWidth0)) + width * solidPlatformWidth0, Math.floor(Math.random() * height * (solidPlatformHeight1 - solidPlatformHeight0)) + height * solidPlatformHeight0));
  
         // create a second platform with similar parameters but on the right side of the map
-        solidPlatforms.push(new Platforms(Math.floor(Math.random() * width * 0.05) + width * 0.5, Math.floor(Math.random() * height * 0.2) + height * 0.6, Math.floor(Math.random() * width * (solidPlatformWidth1 - solidPlatformWidth0)) + width * solidPlatformWidth0, Math.floor(Math.random() * height * (solidPlatformHeight1 - solidPlatformHeight0)) + height * solidPlatformHeight0));
+        solidPlatforms.push(new Platforms(Math.floor(Math.random() * width * 0.05) + width * 0.5, Math.floor(Math.random() * height * 0.2) + Math.floor(height * 0.6), Math.floor(Math.random() * width * (solidPlatformWidth1 - solidPlatformWidth0)) + width * solidPlatformWidth0, Math.floor(Math.random() * height * (solidPlatformHeight1 - solidPlatformHeight0)) + height * solidPlatformHeight0));
     }
         
     // first two platforms will be exactly same as it was in 2 platforms,
     // and 3rd platform is a hovering type close to the middle
     if (numberOfPlatforms == 3) {
         // create solid platforms at the bottom part of the map
-        solidPlatforms.push(new Platforms(Math.floor(Math.random() * width * 0.05), Math.floor(Math.random() * height * 0.2) + height * 0.6, Math.floor(Math.random() * width * (solidPlatformWidth1 - solidPlatformWidth0)) + width * solidPlatformWidth0, Math.floor(Math.random() * height * (solidPlatformHeight1 - solidPlatformHeight0)) + height * solidPlatformHeight0));
-        solidPlatforms.push(new Platforms(Math.floor(Math.random() * width * 0.05) + width * 0.5, Math.floor(Math.random() * height * 0.2) + height * 0.6, Math.floor(Math.random() * width * (solidPlatformWidth1 - solidPlatformWidth0)) + width * solidPlatformWidth0, Math.floor(Math.random() * height * (solidPlatformHeight1 - solidPlatformHeight0)) + height * solidPlatformHeight0));
+        solidPlatforms.push(new Platforms(Math.floor(Math.random() * width * 0.05), Math.floor(Math.random() * height * 0.2) + Math.floor(height * 0.6), Math.floor(Math.random() * width * (solidPlatformWidth1 - solidPlatformWidth0)) + width * solidPlatformWidth0, Math.floor(Math.random() * height * (solidPlatformHeight1 - solidPlatformHeight0)) + height * solidPlatformHeight0));
+        solidPlatforms.push(new Platforms(Math.floor(Math.random() * width * 0.05) + Math.floor(width * 0.5), Math.floor(Math.random() * height * 0.2) + Math.floor(height * 0.6), Math.floor(Math.random() * width * (solidPlatformWidth1 - solidPlatformWidth0)) + width * solidPlatformWidth0, Math.floor(Math.random() * height * (solidPlatformHeight1 - solidPlatformHeight0)) + height * solidPlatformHeight0));
  
         // create a hovering platform at the middle, upper map
-        hoveringPlatforms.push(new Platforms(Math.floor(Math.random() * width * 0.2) + width * 0.2, Math.floor(Math.random() * height * 0.1) + height * 0.4, Math.floor(Math.random() * width * (hoveringPlatformWidth1 - hoveringPlatformWidth0)) + width * hoveringPlatformWidth0, Math.floor(Math.random() * height * (hoveringPlatformHeight1 - hoveringPlatformHeight0)) + height * hoveringPlatformHeight0));
+        hoveringPlatforms.push(new Platforms(Math.floor(Math.random() * width * 0.2) + Math.floor(width * 0.2), Math.floor(Math.random() * height * 0.1) + Math.floor(height * 0.4), Math.floor(Math.random() * width * (hoveringPlatformWidth1 - hoveringPlatformWidth0)) + width * hoveringPlatformWidth0, Math.floor(Math.random() * height * (hoveringPlatformHeight1 - hoveringPlatformHeight0)) + height * hoveringPlatformHeight0));
     }
 
     // first two platforms will be exactly same as it was in 2 platforms,
     // and 2 hovering platforms will be above them much similar to solid platforms
     if (numberOfPlatforms == 4) {
         // create solid platforms at the bottom part of the map
-        solidPlatforms.push(new Platforms(Math.floor(Math.random() * width * 0.05), Math.floor(Math.random() * height * 0.2) + height * 0.6, Math.floor(Math.random() * width * (solidPlatformWidth1 - solidPlatformWidth0)) + width * solidPlatformWidth0, Math.floor(Math.random() * height * (solidPlatformHeight1 - solidPlatformHeight0)) + height * solidPlatformHeight0));
-        solidPlatforms.push(new Platforms(Math.floor(Math.random() * width * 0.05) + width * 0.5, Math.floor(Math.random() * height * 0.2) + height * 0.6, Math.floor(Math.random() * width * (solidPlatformWidth1 - solidPlatformWidth0)) + width * solidPlatformWidth0, Math.floor(Math.random() * height * (solidPlatformHeight1 - solidPlatformHeight0)) + height * solidPlatformHeight0));
+        solidPlatforms.push(new Platforms(Math.floor(Math.random() * width * 0.05), Math.floor(Math.random() * height * 0.2) + Math.floor(height * 0.6), Math.floor(Math.random() * width * (solidPlatformWidth1 - solidPlatformWidth0)) + width * solidPlatformWidth0, Math.floor(Math.random() * height * (solidPlatformHeight1 - solidPlatformHeight0)) + height * solidPlatformHeight0));
+        solidPlatforms.push(new Platforms(Math.floor(Math.random() * width * 0.05) + Math.floor(width * 0.5), Math.floor(Math.random() * height * 0.2) + Math.floor(height * 0.6), Math.floor(Math.random() * width * (solidPlatformWidth1 - solidPlatformWidth0)) + width * solidPlatformWidth0, Math.floor(Math.random() * height * (solidPlatformHeight1 - solidPlatformHeight0)) + height * solidPlatformHeight0));
  
         // create a hovering platforms at the upper map
-        hoveringPlatforms.push(new Platforms(Math.floor(Math.random() * width * 0.05), Math.floor(Math.random() * height * 0.1) + height * 0.4 , Math.floor(Math.random() * width * (hoveringPlatformWidth1 - hoveringPlatformWidth0)) + width * hoveringPlatformWidth0, Math.floor(Math.random() * height * (hoveringPlatformHeight1 - hoveringPlatformHeight0)) + height * hoveringPlatformHeight0));
-        hoveringPlatforms.push(new Platforms(Math.floor(Math.random() * width * 0.05) + width * 0.5, Math.floor(Math.random() * height * 0.1) + height * 0.4, Math.floor(Math.random() * width * (hoveringPlatformWidth1 - hoveringPlatformWidth0)) + width * hoveringPlatformWidth0, Math.floor(Math.random() * height * (hoveringPlatformHeight1 - hoveringPlatformHeight0)) + height * hoveringPlatformHeight0));
+        hoveringPlatforms.push(new Platforms(Math.floor(Math.random() * width * 0.05), Math.floor(Math.random() * height * 0.1) + Math.floor(height * 0.4), Math.floor(Math.random() * width * (hoveringPlatformWidth1 - hoveringPlatformWidth0)) + width * hoveringPlatformWidth0, Math.floor(Math.random() * height * (hoveringPlatformHeight1 - hoveringPlatformHeight0)) + height * hoveringPlatformHeight0));
+        hoveringPlatforms.push(new Platforms(Math.floor(Math.random() * width * 0.05) + Math.floor(width * 0.5), Math.floor(Math.random() * height * 0.1) + Math.floor(height * 0.4), Math.floor(Math.random() * width * (hoveringPlatformWidth1 - hoveringPlatformWidth0)) + width * hoveringPlatformWidth0, Math.floor(Math.random() * height * (hoveringPlatformHeight1 - hoveringPlatformHeight0)) + height * hoveringPlatformHeight0));
     }
 }

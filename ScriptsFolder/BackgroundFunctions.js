@@ -39,6 +39,24 @@ function drawMainMenuBackGround(){
     }
 }
 
+// initiate the characters when it is Lift Series
+function startGame(){
+
+    // randomly select attack keys
+    const attack1 = randomAttackKeys[Math.floor(Math.random()*4)];
+    let attack2 = randomAttackKeys[Math.floor(Math.random()*4)];
+    while (attack2 == attack1) {attack2 = randomAttackKeys[Math.floor(Math.random()*4)];}
+
+    // create a new player
+    playerObject = new Player(35, 80, width, height, 10, [], [], [], [], 5 + Math.random() * (5 - level), 100 - (level * 10) * Math.random(), 1, [attack1, attack2], "Left");
+    playerObject.position = [75 / 600 * width, 20];
+
+    // create a new enemy
+    enemyObject = new Enemy(35, 80, width, height, 10, [], [], [], [], 10, 100, -1, "Right");
+    enemyObject.position = [450 / 600 * width, 120];
+}
+
+
 // display lift series bavkground and the platforms
 // pause the game if pause button is pressed
 function drawLiftSeries(){
@@ -52,13 +70,93 @@ function drawLiftSeries(){
         solidPlatforms[i].drawPlatform(solidPlatformImage);
     }
 
+    
+
     // pause button
     pauseButton.drawPictureButton();
     if (pauseButton.clicked == true || keyCode == 27){ paused = true; } // set paused true, if pause button is clicked or ESC is pressed
+
+    if (paused == false){
+        // operate the player
+        playerObject.drawPlayer([enemyObject.attackArray]);
+
+        // operate the enemy
+        enemyObject.drawPlayer([playerObject.attackArray]);
+    }
+    
+    if (playerObject.position[1] > height){
+        playerObject.position = [75 / 600 * width, 20];
+        playerObject.acceleration = [0, 0];
+        playerObject.velocity = [0, 0];
+    }
+    if (enemyObject.position[1] > height){
+        enemyObject.position = [450 / 600 * width, 120];
+        enemyObject.acceleration = [0, 0];
+        enemyObject.velocity = [0, 0];
+    }
+
+    push()
+    fill(255, 0, 0, 120)
+    rect(playerObject.position[0], playerObject.position[1], playerObject.characterWidth, playerObject.characterHeight)
+    stroke(255, 255, 255)
+    fill(0, 255, 0, 120)
+    rect(enemyObject.position[0], enemyObject.position[1], enemyObject.characterWidth, enemyObject.characterHeight)
+    stroke(255, 255, 255)
+
+    fill(0, 0, 0)
+    for (let i = 0; i < enemyObject.attackArray.length; i++){
+        let borders = enemyObject.attackArray[i].returnBorders();
+        rect(borders[0], borders[1], borders[2] - borders[0], borders[3] - borders[1]);
+    }
+
+    fill(0, 255, 255)
+    for (let i = 0; i < playerObject.attackArray.length; i++){
+        let borders = playerObject.attackArray[i].returnBorders();
+        rect(borders[0], borders[1], borders[2] - borders[0], borders[3] - borders[1]);
+    }
+
+    pop();
+
+
+    // check if the health of player is 0
+    // if so display Game Over and stop the game
+    if (playerObject.health <= 0) {
+
+        // display Game Over
+        push();
+        textSize((width * 5) / textWidth("Game Over") * 12);
+        fill(125, 255, 65);
+        text("Game Over", width / 2, height / 2);
+        pop();
+
+        // reset the level on new game
+        level = 0;
+
+        // Go to main menu after 3 seconds
+        setTimeout(() => {
+            gamemode = "Main Menu"; playerObject = undefined; enemyObject = undefined;
+          }, 3000);
+        
+        // reset creating the player and the enemy
+        callStartGameOnce = false;
+
+    }
+
+    // restart game with higher level
+    else if (enemyObject.health <= 0) {
+        level++;
+        changedGamemode = true; // resart game
+
+        // reset creating the player and the enemy
+        callStartGameOnce = false;
+    }
+
+    // draw pause menu
     if (paused == true) { 
         pauseButton.ghostButton = true;
         pauseGame(0.3, 0.7, 15, [235, 52, 95, 150], [150, 100, 100]);
     }
+    
 }
 
 
@@ -71,14 +169,14 @@ function displayGuidePage(){
     if (0.8346452852032277 * width < mouseX && mouseX < width * 0.8803206982255793 && height * 0.9413685835724114 < mouseY && mouseY < height * 0.9880248821727224 && mouseclicked === true && guidesPageIndex != 0){
         guidesPageIndex -= 1;
     }
-
+    
     // hitbox of right arrow
     if (0.8890670539107105 * width < mouseX && mouseX < width * 0.9318270150380187 && height * 0.9413685835724114 < mouseY && mouseY < height * 0.9880248821727224 && mouseclicked === true && guidesPageIndex != guidePages.length - 1){
         guidesPageIndex += 1;
     }
 
     // hitbox of the quit button
-    if (0.9512633610049769 * width < mouseX && mouseX < width * 0.9959669567289808 && height * 0.0051321916595031825 < mouseY && mouseY < height * 0.07978226942000084 && mouseclicked === true){
+    if (0.7121562930160942 * width < mouseX && mouseX < width * 0.9653391633864645 && height * 0.01757387128625279 < mouseY && mouseY < height * 0.06425921208924065 && mouseclicked === true){
         guidesButton.clicked = false;
     }
 }
@@ -98,12 +196,68 @@ function mute(){
 // then return true so that lift series game play can start
 function displayControlsPage(duration){
 
+    
+
     // if the difference of time is greater than duration seconds, end Controls Page
     if (currentTime - liftSeriesTime < duration * 1000){
-        //console.log(currentTime, beginningTime, currentTime - beginningTime)
-        background(255)
+        
+        background(235, 125, 120);
+        if (callStartGameOnce == false) {
+            // create the enemy and the player
+            startGame();
+
+            // make sure the objects are created once
+            callStartGameOnce = true;
+        }
+        push();
+
+        // the text to display on controls page
+        const healthMessage = `Your Initial Health: ${Math.round(playerObject.health)}`;
+        const damageMessage = `Your Damage Per Attack: ${Math.round(playerObject.attackDamage)}`;
+
+        const Attack1 = `Your Projectile Attack: ${playerObject.attackKeys[0]}`;
+        const Attack2 = `Your Wall Attack: ${playerObject.attackKeys[1]}`;
+
+        const enemyHealthMessage = `Enemy's Initial Health: ${Math.round(enemyObject.health)}`;
+        const enemyDamageMessage = `Enemy's Damage Per Attack: ${Math.round(enemyObject.attackDamage)}`;
+
+        // display text for player's health
+        textSize(12);
+        fill(0, 255,255);
+        textSize(width * 0.5 / textWidth(healthMessage) * 12);
+        text(healthMessage, width * 0.02 + textWidth(healthMessage) / 2, height * 0.1);
+        
+        // display text for player's damage
+        textSize(12);
+        textSize(width * 0.5 / textWidth(damageMessage) * 12);
+        text(damageMessage, width * 0.02 + textWidth(damageMessage) / 2, height * 0.3);
+        
+        // display text for enemy's health
+        textSize(12);
+        fill(125, 0,255);
+        textSize(width * 0.5 / textWidth(enemyHealthMessage) * 12);
+        text(enemyHealthMessage, width * 0.02 + textWidth(enemyHealthMessage) / 2, height * 0.6);
+        
+        // display text for enemy's attack
+        textSize(12);
+        textSize(width * 0.5 / textWidth(enemyDamageMessage) * 12);
+        text(enemyDamageMessage, width * 0.02 + textWidth(enemyDamageMessage) / 2, height * 0.8);
+
+        // display text for player's attack keys
+        textSize(12);
+        fill(0, 255,125);
+        textSize(width * 0.3 / textWidth(Attack1) * 12);
+        text(Attack1, width * 0.62 + textWidth(Attack1) / 2, height * 0.4);
+        
+        textSize(12);
+        fill(0, 255,125);
+        textSize(width * 0.3 / textWidth(Attack2) * 12);
+        text(Attack2, width * 0.62 + textWidth(Attack2) / 2, height * 0.6);
+
+        pop();
         return false;
     }
+    
     return true;
 }
 
@@ -147,11 +301,13 @@ function changeGamemode(){
 function pauseGame(rectWidth, rectHeight, cornerRadii, rectColourFill, rectColourStroke) {
 
     // draw the menu
+    push();
     strokeWeight(4);
     stroke(rectColourStroke);
     fill(rectColourFill);
     rect(width * (1 - rectWidth) * 0.5, height * (1 - rectHeight) * 0.5, width * rectWidth, height * rectHeight, cornerRadii);
     noStroke();
+    pop();
 
     // instantiate the buttons
     let continueButton = new GameModeButtons(25, 200, 45, "Continue", 40, 'Comic Sans MS', [50, 182, 80]);

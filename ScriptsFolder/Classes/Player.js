@@ -1,7 +1,7 @@
 
 
 class Player{
-    constructor(characterWidth, characterHeight, windowWidth, windowHeight, maxVelocity, runningAnimation, jumpingAnimation, attackAnimation, damageAnimation, attackDamage, health, direction){
+    constructor(characterWidth, characterHeight, windowWidth, windowHeight, maxVelocity, runningAnimation, jumpingAnimation, attackAnimation, damageAnimation, attackDamage, health, direction, attackKeys, startDirection){
         this.position = [0, 0];
         this.windowWidth = windowWidth;
         this.windowHeight = windowHeight;
@@ -17,10 +17,11 @@ class Player{
         this.attackDamage = attackDamage;
         this.health = health;
         this.playerIsHit = false;
-        this.attackKeys = ["a", "d"];
+        this.attackKeys = attackKeys;
         this.direction = direction;
         this.attackArray = [];
         this.characterHasLanded = [];
+        this.startDirection = startDirection;
         
     }
 
@@ -48,7 +49,7 @@ class Player{
         // if user chose the first attack
         if (key == this.attackKeys[0] && this.attackArray.length < 1) {
             this.attacking = true;    // set attacking as true so rest of the program will know player is currently attacking
-            this.attackArray.push(new ProjectileAttack(this.position[0], this.position[1] + (this.characterHeight - attackHeight) / 2, attackWidth, attackHeight, attackDamage, projectileSpeed, windowWidth, this.direction));    // append a proejctile attack to attackArray
+            this.attackArray.push(new ProjectileAttack(this.position[0], this.position[1] + (this.characterHeight - attackHeight) / 2, attackWidth, attackHeight, this.attackDamage, projectileSpeed, windowWidth / 2, this.direction));    // append a proejctile attack to attackArray
         }
         // if user chose the second attack
         else if (key == this.attackKeys[1] && this.attackArray.length < 1) {
@@ -74,7 +75,7 @@ class Player{
     // badAttackArrays is an array of attack arrays of attacks that will affect the player
     isPlayerHit(badAttackArrays){
         for (let m = 0; m < badAttackArrays.length; m++){
-
+            
             // loop through each attack
             for (let i = 0; i < badAttackArrays[m].length; i++){
                 let boundries = badAttackArrays[m][i].returnBorders(); // get boundries of the Attacks
@@ -90,6 +91,7 @@ class Player{
                 // check if player is in those boundries
                 if (Math.sqrt(distAttack) + Math.sqrt(distCharacter) > Math.sqrt(((boundries[1] + (boundries[3] - boundries[1]) / 2) - (this.position[1] + this.characterHeight / 2))**2 + ((boundries[0] + (boundries[2] - boundries[0]) / 2) - (this.position[0] + this.characterWidth / 2))**2)) {
                     this.getDamage(badAttackArrays[m][i].damage);   // damage player
+                    badAttackArrays[m].splice(i,1);                 // remove attack if it is hit
                     this.playerIsHit = true;                        // notify player is hit
                 }
             }
@@ -102,8 +104,8 @@ class Player{
         for (let i = 0; i < this.attackArray.length; i++) {
             
             // Remove Firewalls if they have existed long enough
-            if (currentTime - this.attackArray[i].creationTime * 1000 > attackDuration) {
-                this.attackArray.remove(i);
+            if ((currentTime - this.attackArray[i].creationTime) / 1000 > attackDuration) {
+                this.attackArray.splice(i, 1);
             }
             // Move projectiles
             // And remove them if they pass attackDistance
@@ -122,19 +124,40 @@ class Player{
     // it is a recursive function, therefore it can be costful
     collide(gX, gY, gVelocity, gAcceleration, recured=[-1, -1]){
 
+        // check if the ball is above any platform
+        let outOfBounds = false;
+
+        // make sure acceleration doesn't go astronomical
+        if (gAcceleration[1] > g){
+            gAcceleration[1] = g;
+        }
+        if (gAcceleration[1] * -1 > jumpingConstant){
+            gAcceleration[1] = -1 * jumpingConstant;
+        }
+        if (gAcceleration[0] > 50){
+            gAcceleration[0] = 50;
+        }
+        if (gAcceleration[0] < -50){
+            gAcceleration[0] = -50;
+        }
 
         // decrease the acceleration according to a constant
-        if (gAcceleration[0] != 0){
+        if (gAcceleration[0] != 0 && this.characterHasLanded.length != 0){
             gAcceleration[0] += (gAcceleration[0] < 0) ? cooefOfFriction : -1 * cooefOfFriction;
+        }
+        else{
+            gVelocity[0] -= Math.sign(gVelocity[0]) * accel_vel_constant
         }
         if (gAcceleration[1] != g){
             gAcceleration[1] += (gAcceleration[1] < g) ? cooefOfFriction : -1 * cooefOfFriction;
+        }
+        else{
+            gVelocity[1] -= Math.sign(gVelocity[1]) * accel_vel_constant;
         }
         
         // change velocity depending on the acceleration
         // do not change the velocity if it is higher than maxVelocity
         if ((gVelocity[0] + gAcceleration[0] * accel_vel_constant) ** 2 + (gVelocity[1] + gAcceleration[1] * accel_vel_constant)**2 < this.maxVelocity**2){
-            //console.log(this.velocity, this.maxVelocity)
             gVelocity[0] += gAcceleration[0] * accel_vel_constant;
             gVelocity[1] += gAcceleration[1] * accel_vel_constant;
         }
@@ -153,7 +176,8 @@ class Player{
                 //  it is not reccurring for solid platforms currently
                 //  the distance moved in this iteration is less than current speed
                 if (recured[1] == -1 && gY + this.characterHeight <= border[1] && gX + this.characterWidth >= border[0] && gX <= border[2] && ((gY - this.position[1])**2 + (gX - this.position[0])**2) < (this.velocity[0]**2 + this.velocity[1]**2)) {
-                    
+                    outOfBounds = true;
+
                     // recur again after moving the player by one pixel
                     this.collide(gX + Math.sign(gVelocity[0]), gY + Math.sign(gVelocity[1]), gVelocity, gAcceleration, [i, -1]);
                 }
@@ -183,6 +207,7 @@ class Player{
                 
                 // loop through every solid platform
                 for (let i = 0; i < solidPlatforms.length; i++) {
+                    
 
                     // get the bordeers of the platform
                     let border = solidPlatforms[i].getBorders();
@@ -192,7 +217,7 @@ class Player{
                     //  it is not reccurring for hovering platforms currently
                     //  the distance moved in this iteration is less than current speed
                     if (recured[0] == -1 && gY + this.characterHeight <= border[1] && gX + this.characterWidth >= border[0] && gX <= border[2] && ((gY - this.position[1])**2 + (gX - this.position[0])**2) < (this.velocity[0]**2 + this.velocity[1]**2)) {
-                        
+                        outOfBounds = true;
                         // recur again after moving the player by one pixel
                         this.collide(gX + Math.sign(gVelocity[0]), gY + Math.sign(gVelocity[1]), gVelocity, gAcceleration, [-1, i]); 
                     }
@@ -215,6 +240,22 @@ class Player{
                         }
                         break;
                     } 
+                }
+            }
+
+            // if the player is not above a platform
+            if (outOfBounds == false && recured[0] == -1 && recured[1] == -1){
+                
+                //if the player has not yet moved enough
+                if ((gY - this.position[1])**2 + (gX - this.position[0])**2 < (this.velocity[0]**2 + this.velocity[1]**2))
+                {
+                    this.collide(gX + Math.sign(gVelocity[0]), gY + Math.sign(gVelocity[1]), gVelocity, gAcceleration, [-1, -1]); 
+                }
+
+                // place the player
+                else {
+                    this.position[0] = gX;
+                    this.position[1] = gY;
                 }
             }
         }
@@ -250,17 +291,19 @@ class Player{
                 this.velocity = [this.velocity[0], 0];
             }
         }
-
     }
+
+
     // change acceleration of the player depending on used input
     processInput(){
 
-
         if (key == "d") {
             this.acceleration[0] += runningConstant;
+            this.direction = 1;
         }
         else if (key == "a") {
             this.acceleration[0] -= runningConstant;
+            this.direction = -1;
         }
         
         // jump if standing on a solid platform
@@ -285,13 +328,50 @@ class Player{
         if (key == "s") {
             for (let i = 0; i < hoveringPlatforms.length; i++){
                 let border = hoveringPlatforms[i].getBorders();
-                if (this.position[1] + height == border[1] && this.position[0] + width >= border[0] && this.position[0] <= border[0] + border[3]) {
+                if (this.position[1] + this.characterHeight == border[1] && this.position[0] + this.characterWidth >= border[0] && this.position[0] <= border[0] + border[3]) {
                     this.characterHasLanded = [];
-                    this.position[1] -= 3;
-                }
+                    this.position[1] += 30;
+                } 
             }
         }
     }
+
+
+    // presents HP of the player by a box on the top of the screen
+    showHP(){
+
+        // if the box is on the right
+        if (this.startDirection == "Right" && this.health > 0){
+            push();
+            stroke(255,255,0);
+            fill(120,255,120);
+            rect(this.windowWidth * 0.6 + this.windowWidth * 0.0035 * (100 - this.health), this.windowHeight * 0.05, this.windowWidth * 0.0035 * this.health, this.windowHeight * 0.01);
+            pop();
+        }
+
+        // if the box is on the left
+        else if (this.startDirection == "Left" && this.health > 0){
+            push();
+            stroke(255,255,0);
+            fill(120,255,120);
+            rect(this.windowWidth * 0.1, this.windowHeight * 0.05, this.windowWidth * 0.0035 * this.health, this.windowHeight * 0.01);
+            pop();
+        }
+    }
+
+// draw the player
+// draw health bar
+// proceed every action the player has
+drawPlayer(badAttackArrays){
+    this.showHP();
+    
+    this.processInput()
+    
+    this.collide(this.position[0], this.position[1], this.velocity, this.acceleration);
+    this.attack();
+    this.isPlayerHit(badAttackArrays);
+    this.checkAttackLifeTime();
+}
 }
 
 
