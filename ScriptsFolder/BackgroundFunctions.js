@@ -332,6 +332,7 @@ function pauseGame(rectWidth, rectHeight, cornerRadii, rectColourFill, rectColou
         paused = false;
         pauseButton.clicked = false;
         pauseButton.ghostButton = false;
+        callStartGameOnce = false;
     }
 
     // return back to main
