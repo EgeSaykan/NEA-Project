@@ -342,5 +342,6 @@ function pauseGame(rectWidth, rectHeight, cornerRadii, rectColourFill, rectColou
         gamemode = "Main Menu";
         pauseButton.clicked = false;
         pauseButton.ghostButton = false;
+        callStartGameOnce = false;
     }
 }
